@@ -38,7 +38,12 @@ public class RewardServiceImpl implements RewardService {
             rewardMap.put(monthStr, 0.0);
         }
 
-        List<Purchase> purchases = purchaseRepository.findByCustomerID(customerID);
+        LocalDate localDate = now.minusMonths(numMonths - 1).withDayOfMonth(1).minusDays(1);
+        Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+//        List<Purchase> purchases = purchaseRepository.findByCustomerID(customerID);
+
+        List<Purchase> purchases = purchaseRepository.findByCustomerIDAfter(customerID, date);
         for (Purchase purchase : purchases) {
             String dateStr = purchase.getPayTime().toInstant()
                     .atZone(ZoneId.systemDefault())

@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-
+@AllArgsConstructor
 public class Purchase {
 
     @Id
@@ -33,4 +33,8 @@ public class Purchase {
         this.payTime = payTime;
     }
 
+    public Purchase(long customerID, double payAmount) {
+        this.customerID = customerID;
+        this.payAmount = payAmount;
+    }
 }

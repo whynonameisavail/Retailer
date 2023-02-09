@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,21 +27,21 @@ public class RewardController {
      * @param months recent months to compute, default is 3
      * @return the reward result for the customer, containing reward for each month and total reward
      */
-    @GetMapping("/reward/{customerID}")
-    public ResponseEntity<RewardResult> rewardForCustomer(@PathVariable long customerID, @RequestParam(value = "months", defaultValue = "3") int months) {
-        RewardResult rewardResult = rewardService.rewardForCustomer(customerID, months);
-        return new ResponseEntity<>(rewardResult, HttpStatus.OK);
-    }
-
-    /**
-     *
-     * @param months recent months to compute
-     * @return a reward points information for each customer
-     */
     @GetMapping("/reward")
-    public ResponseEntity<List<RewardResult>> rewardForAllCustomers(@RequestParam(value = "months", defaultValue = "3") int months) {
-        List<RewardResult> results = rewardService.rewardForAllCustomers(months);
-        return new ResponseEntity<>(results, HttpStatus.OK);
+    public ResponseEntity<List<RewardResult>> rewardForCustomer( @RequestParam(value = "customerID", defaultValue = "-1") long customerID, @RequestParam(value = "months", defaultValue = "3") int months) {
+        if (customerID == -1) {
+            // give reward for all customers
+            List<RewardResult> results = rewardService.rewardForAllCustomers(months);
+            return new ResponseEntity<>(results, HttpStatus.OK);
+
+        } else {
+            // give reward for the specfic customer
+            RewardResult rewardResult = rewardService.rewardForCustomer(customerID, months);
+            List<RewardResult> results = new ArrayList<>();
+            results.add(rewardResult);
+            return new ResponseEntity<>(results, HttpStatus.OK);
+        }
+
     }
 }
 

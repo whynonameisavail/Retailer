@@ -1,14 +1,18 @@
 package com.example.retailer;
 
 import com.example.retailer.repository.PurchaseRepository;
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
+
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@RunWith(SpringRunner.class)
 public class RetailerApplicationTests {
 
     @Autowired
@@ -26,7 +31,7 @@ public class RetailerApplicationTests {
     @Autowired
     private PurchaseRepository purchaseRepository;
 
-    @BeforeEach
+    @Before
     public void clearBeforeTests() throws Exception {
         purchaseRepository.deleteAll();
     }
@@ -72,12 +77,12 @@ public class RetailerApplicationTests {
     public void rewardForCustomer() throws Exception {
 
         mockMvc.perform(post("/purchases").content(
-                "{\"customerID\": 1, \"payAmount\": 190}")).andExpect(
+                "{\"customerID\": 100, \"payAmount\": 190}")).andExpect(
                 status().isCreated());
 
-        mockMvc.perform(get("/reward/1")).andExpect(
+        mockMvc.perform(get("/reward?customerID=100")).andExpect(
                 status().isOk()).andExpect(
-                jsonPath("$.total").value(
+                jsonPath("$[0].total").value(
                         230));
 
     }
@@ -86,12 +91,12 @@ public class RetailerApplicationTests {
     public void rewardForCustomerWithParameter() throws Exception {
 
         mockMvc.perform(post("/purchases").content(
-                "{\"customerID\": 1, \"payAmount\": 190}")).andExpect(
+                "{\"customerID\": 200, \"payAmount\": 190}")).andExpect(
                 status().isCreated());
 
-        mockMvc.perform(get("/reward/1?months={months}", 4)).andExpect(
+        mockMvc.perform(get("/reward?customerID=200&months={months}", 4)).andExpect(
                 status().isOk()).andExpect(
-                jsonPath("$.months").value(
+                jsonPath("$[0].months").value(
                         4));
 
     }
@@ -107,6 +112,5 @@ public class RetailerApplicationTests {
                 status().isOk());
 
     }
-
 
 }
